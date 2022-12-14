@@ -68,7 +68,7 @@ return pool
     return result.rows[0];
   })
   .catch((err) => {
-    // console.log(err.message);
+    console.log(err.message);
     return null
   });
 
@@ -84,10 +84,29 @@ exports.getUserWithId = getUserWithId;
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser =  function(user) {
-  const userId = Object.keys(users).length + 1;
-  user.id = userId;
-  users[userId] = user;
-  return Promise.resolve(user);
+
+  const values = [user.name, user.email, user.password]
+
+  const queryString = `
+    INSERT INTO users (name, email, password)
+    VALUES ($1, $2, $3)
+    RETURNING *`;
+  
+  return pool
+    .query(queryString, values)
+    .then((result) => {
+    // console.log(result.rows[0]);
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return null
+    });
+
+  // const userId = Object.keys(users).length + 1;
+  // user.id = userId;
+  // users[userId] = user;
+  // return Promise.resolve(user);
 }
 exports.addUser = addUser;
 
